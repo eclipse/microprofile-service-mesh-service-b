@@ -23,7 +23,7 @@
  *
  *******************************************************************************/
 
-package application.rest;
+package org.eclipse.microprofile.servicemesh.serviceb;
 
 import java.util.Date;
 import java.util.Timer;
