@@ -10,6 +10,6 @@
   <!-- Automatically expand WAR files and EAR files -->
   <applicationManager autoExpand="true"/>
 
-  <webApplication name="mp-istio-sample-producer" location="${app.location}"/>
+  <webApplication name="mp-servicemesh-sample-serviceb" location="${app.location}"/>
 
 </server>
