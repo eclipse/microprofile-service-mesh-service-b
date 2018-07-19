@@ -82,8 +82,8 @@
       <id>liberty</id>
       <properties>
         <app.name>${project.artifactid}</app.name>
-        <testServerHttpPort>8080</testServerHttpPort>
-        <testServerHttpsPort>8443</testServerHttpsPort>
+        <testServerHttpPort>9080</testServerHttpPort>
+        <testServerHttpsPort>9443</testServerHttpsPort>
         <version.maven-failsafe-plugin>2.18.1</version.maven-failsafe-plugin>
         <version.download-maven-plugin>1.4.0</version.download-maven-plugin>
         <package.file>${project.build.directory}/${project.artifactId}-${project.version}.zip</package.file>
