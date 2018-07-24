@@ -38,14 +38,14 @@ public class ServiceBEndpoint {
     ServiceB serviceB;
 
     @GET
-    @Produces({MediaType.TEXT_PLAIN})
+    @Produces(MediaType.TEXT_PLAIN)
     public String callPlainText() throws Exception {
         ServiceData data = call();
         return data.getMessage() + " " + data.getSource();
     }
     
     @GET
-    @Produces({MediaType.APPLICATION_JSON,})
+    @Produces(MediaType.APPLICATION_JSON)
     public ServiceData call() throws Exception {
         ServiceData data = serviceB.call();
         return data;
