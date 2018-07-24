@@ -25,71 +25,29 @@
 
 package org.eclipse.microprofile.servicemesh.serviceb;
 
-import java.net.InetAddress;
-
-import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.eclipse.microprofile.servicemesh.common.CallCounter;
-
-@Path("serviceB")
-@RequestScoped
+@Path("/")
 public class ServiceBEndpoint {
 
     @Inject
-    @ConfigProperty(name = "failFrequency", defaultValue = "0.8") // 0.8 means fail 80% of the time
-    private double failFrequency;
-
-    @Inject
-    CallCounter callCounter;
+    ServiceB serviceB;
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces({MediaType.TEXT_PLAIN})
+    public String callPlainText() throws Exception {
+        ServiceData data = call();
+        return data.getMessage() + " " + data.getSource();
+    }
+    
+    @GET
+    @Produces({MediaType.APPLICATION_JSON,})
     public ServiceData call() throws Exception {
-        String hostname;
-
-        int callCount = callCounter.increment();
-
-        System.out.println("callCount: " + callCount);
-
-        boolean pass = true;
-        if (failFrequency >= 1.0) {
-            pass = false;
-        } else if (failFrequency > 0 && failFrequency < 1) {
-            int passRate = (int) (1.0 / (1.0 - failFrequency));
-            int remainder = callCount % passRate;
-            pass = remainder == 0;
-        }
-
-        if (pass) {
-
-            try {
-                hostname = InetAddress.getLocalHost()
-                                      .getHostName();
-            } catch (java.net.UnknownHostException e) {
-                hostname = e.getMessage();
-            }
-
-            ServiceData data = new ServiceData();
-            data.setSource(this.toString() + " on " + hostname + ", failFrequency: " + failFrequency);
-            data.setMessage("Hello from serviceB");
-            data.setCallCount(callCount);
-            data.setTries(1);
-
-            return data;
-            
-        } else {
-
-            Exception e = new Exception("ServiceB deliberately caused to fail. Call count: " + callCount
-                    + ", failFrequency: " + failFrequency);
-            System.out.println("Throwing: " + e.getMessage());
-            throw e;
-
-        }
+        ServiceData data = serviceB.call();
+        return data;
     }
 }
