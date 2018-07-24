@@ -25,46 +25,29 @@
 
 package org.eclipse.microprofile.servicemesh.serviceb;
 
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Date;
-
-import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.eclipse.microprofile.faulttolerance.Retry;
-
-@Path("serviceB")
-@RequestScoped
+@Path("/")
 public class ServiceBEndpoint {
 
-  @Inject
-  @ConfigProperty(name = "failFrequency", defaultValue = "0")
-  private int failFrequency;
+    @Inject
+    ServiceB serviceB;
 
-  private static int callCount;
-
-  @GET
-  @Retry
-  public String hello() throws Exception {
-    String hostname;
-
-    ++callCount;
-
-    if (failFrequency > 0 && callCount % failFrequency == 0) {
-      throw new Exception("ServiceB deliberately caused to fail. Call count: " + callCount + ", failFrequency: " + failFrequency);
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    public String callPlainText() throws Exception {
+        ServiceData data = call();
+        return data.getMessage() + " " + data.getSource();
     }
-
-    try {
-      hostname = InetAddress.getLocalHost().getHostName();
-    } catch(java.net.UnknownHostException e) {
-      hostname = e.getMessage();
+    
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public ServiceData call() throws Exception {
+        ServiceData data = serviceB.call();
+        return data;
     }
-
-    return "Hello from serviceB (" + this + ") at " + new Date() + " on " + hostname + " (ServiceB call count: " + callCount + ", failFrequency: " + failFrequency + ")";
-  }
 }
