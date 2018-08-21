@@ -30,6 +30,10 @@ import java.net.InetAddress;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
+import org.eclipse.microprofile.metrics.Counter;
+import org.eclipse.microprofile.metrics.annotation.Counted;
+import org.eclipse.microprofile.metrics.annotation.Metric;
+
 @RequestScoped
 public class ServiceB {
 
@@ -37,14 +41,14 @@ public class ServiceB {
     GremlinFactory gremlinFactory;
 
     @Inject
-    CallCounter callCounter;
+    @Metric(name="callCounter")
+    Counter callCounter;
 
+    @Counted(name="callCounter", monotonic=true)
     public ServiceData call() throws Exception {
+        long callCount = callCounter.getCount();
+
         String hostname;
-
-        int callCount = callCounter.increment();
-        System.out.println("callCount: " + callCount);
-
         passOrFail();
         
         try {
@@ -55,8 +59,8 @@ public class ServiceB {
         }
 
         ServiceData data = new ServiceData();
-        double failProbablibity = gremlinFactory.getFailProbablibity();
-        data.setSource(this.toString() + " on " + hostname + ", failProbablibity: " + failProbablibity);
+        double failProbability = gremlinFactory.getFailProbability();
+        data.setSource(this.toString() + " on " + hostname + ", failProbability: " + failProbability);
         data.setMessage("Hello from serviceB @ "+data.getTime());
         data.setCallCount(callCount);
         data.setTries(1);
@@ -76,10 +80,10 @@ public class ServiceB {
         boolean fail = gremlinFactory.fail();
 
         if(fail) {
-            int callCount = callCounter.get();
-            double failProbablibity = gremlinFactory.getFailProbablibity();
+            long callCount = callCounter.getCount();
+            double failProbability = gremlinFactory.getFailProbability();
             Exception e = new Exception("ServiceB deliberately caused to fail. Call count: " + callCount
-                    + ", failProbablibity: " + failProbablibity);
+                    + ", failProbability: " + failProbability);
             System.out.println("Throwing: " + e.getMessage());
             throw e;
         }

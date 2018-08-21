@@ -34,29 +34,35 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 @Dependent
 public class GremlinFactory {
 
+    /**
+     * The probability that fail() will return true.
+     * 0.0 means always false
+     * 1.0 means always true
+     * 0.5 means 50% chance to return true
+     */
     @Inject
-    @ConfigProperty(name = "failProbablibity", defaultValue = "0.0") // 0.0 means always pass, 1.0 means always fail, 0.5 means 50% chance to fail
-    private double failProbablibity;
+    @ConfigProperty(name = "failProbability", defaultValue = "0.0")
+    private double failProbability;
 
     private Random random = new Random();
     
     public boolean fail() {
         boolean fail = true;
-        if (failProbablibity <= 0.0) {
+        if (failProbability <= 0.0) {
             fail = false;
-        } else if (failProbablibity > 0.0 && failProbablibity < 1.0) {
+        } else if (failProbability > 0.0 && failProbability < 1.0) {
             double value = random.nextDouble();
-            // any value up to and including the failProbablibity is a fail
-            // any value greater than the failProbablibity is a pass
-            if(value > failProbablibity) {
+            // any value up to and including the failProbability is a fail
+            // any value greater than the failProbability is a pass
+            if(value > failProbability) {
                 fail = false;
             }
         }
         return fail;
     }
 
-    public double getFailProbablibity() {
-        return failProbablibity;
+    public double getFailProbability() {
+        return failProbability;
     }
 
 }
