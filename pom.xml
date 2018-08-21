@@ -15,7 +15,8 @@
     <version.maven-war-plugin>2.6</version.maven-war-plugin>
     <version.maven-surefire-plugin>2.18.1</version.maven-surefire-plugin>
     <version.exec-maven-plugin>1.6.0</version.exec-maven-plugin>
-    
+    <version.maven-resources-plugin>3.1.0</version.maven-resources-plugin>
+
   </properties>
 
   <dependencies>
@@ -75,21 +76,21 @@
         <os><family>!Windows</family></os>
       </activation>
       <properties>
-        <mvn.extension></mvn.extension>
+        <mvn.extension/>
       </properties>
     </profile>
     <!-- Liberty Profile -->
     <profile>
       <id>liberty</id>
       <properties>
-        <app.name>${project.artifactid}</app.name>
+        <app.name>${project.artifactId}</app.name>
         <default.http.port>8080</default.http.port>
         <default.https.port>8443</default.https.port>
         <testServerHttpPort>${default.http.port}</testServerHttpPort>
         <testServerHttpsPort>${default.https.port}</testServerHttpsPort>
         <version.maven-failsafe-plugin>2.18.1</version.maven-failsafe-plugin>
         <version.download-maven-plugin>1.4.0</version.download-maven-plugin>
-        <version.maven-resources-plugin>3.1.0</version.maven-resources-plugin>
+
         <package.file>${project.build.directory}/${project.artifactId}-${project.version}.zip</package.file>
         <packaging.type>usr</packaging.type>
         <!-- Liberty runtime -->
@@ -230,5 +231,91 @@
         </plugins>
       </build>
     </profile>
+
+    <!-- Thorntail Profile -->
+    <profile>
+    <id>thorntail</id>
+      <properties>
+        <version.thorntail>2.1.0.Final</version.thorntail>
+      </properties>
+
+      <dependencyManagement>
+        <dependencies>
+          <dependency>
+            <groupId>io.thorntail</groupId>
+            <artifactId>bom-all</artifactId>
+            <version>${version.thorntail}</version>
+            <scope>import</scope>
+            <type>pom</type>
+          </dependency>
+        </dependencies>
+      </dependencyManagement>
+
+      <dependencies>
+        <!-- Thorntail Fractions for the implementation -->
+        <dependency>
+          <groupId>io.thorntail</groupId>
+          <artifactId>microprofile</artifactId>
+        </dependency>
+
+        <dependency>
+          <groupId>io.thorntail</groupId>
+          <artifactId>jaeger</artifactId>
+        </dependency>
+      </dependencies>
+
+      <build>
+        <finalName>${project.artifactId}</finalName>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-resources-plugin</artifactId>
+            <version>${version.maven-resources-plugin}</version>
+            <executions>
+              <execution>
+                <id>copy-resources</id>
+                <phase>validate</phase>
+                <goals>
+                  <goal>copy-resources</goal>
+                </goals>
+                <configuration>
+                  <outputDirectory>${basedir}/target/classes</outputDirectory>
+                  <resources>
+                    <resource>
+                      <directory>${basedir}/src/main/profiles/thorntail/config/</directory>
+                      <filtering>false</filtering>
+                    </resource>
+                  </resources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+
+          <plugin>
+            <groupId>io.thorntail</groupId>
+            <artifactId>thorntail-maven-plugin</artifactId>
+            <version>${version.thorntail}</version>
+            <configuration>
+              <properties>
+                <java.net.preferIPv4Stack>true</java.net.preferIPv4Stack>
+              </properties>
+            </configuration>
+
+            <executions>
+              <execution>
+                <goals>
+                  <goal>package</goal>
+                </goals>
+                <configuration>
+                  <hollow>false</hollow>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
   </profiles>
 </project>
