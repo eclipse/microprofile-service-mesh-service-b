@@ -1,3 +1,10 @@
 swarm:
   context:
     path: '/mp-servicemesh-sample/serviceB'
+  jaeger:
+    service-name: serviceb
+    sampler-type: const
+    sampler-parameter: 1
+    enable-b3-header-propagation: true
+    remote-reporter-http-endpoint: http://jaeger-collector.istio-system:14268/api/traces
+
