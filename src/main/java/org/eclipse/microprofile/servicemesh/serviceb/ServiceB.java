@@ -26,20 +26,29 @@
 package org.eclipse.microprofile.servicemesh.serviceb;
 
 import java.net.InetAddress;
+import java.util.Random;
 
-import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.metrics.Counter;
 import org.eclipse.microprofile.metrics.annotation.Counted;
 import org.eclipse.microprofile.metrics.annotation.Metric;
 
-@RequestScoped
+@ApplicationScoped
 public class ServiceB {
 
     @Inject
-    GremlinFactory gremlinFactory;
-
+    @ConfigProperty(name = "minWorkTime", defaultValue = "100") //how long should the minimum simulated work be in ms
+    private long minWorkTime;
+    
+    @Inject
+    @ConfigProperty(name = "maxWorkTime", defaultValue = "5000") //how long should the maximum simulated work be in ms
+    private long maxWorkTime;
+    
+    private Random random = new Random();
+    
     @Inject
     @Metric(name="callCounter")
     Counter callCounter;
@@ -48,9 +57,9 @@ public class ServiceB {
     public ServiceData call() throws Exception {
         long callCount = callCounter.getCount();
 
-        String hostname;
-        passOrFail();
+        simulateWork();
         
+        String hostname;
         try {
             hostname = InetAddress.getLocalHost()
                                   .getHostName();
@@ -59,33 +68,23 @@ public class ServiceB {
         }
 
         ServiceData data = new ServiceData();
-        double failProbability = gremlinFactory.getFailProbability();
-        data.setSource(this.toString() + " on " + hostname + ", failProbability: " + failProbability);
+        data.setSource(this.toString() + " on " + hostname);
         data.setMessage("Hello from serviceB @ "+data.getTime());
         data.setCallCount(callCount);
         data.setTries(1);
-
+        
         return data;
-            
     }
-    
     
     /**
-     * Use the Gremlin Factory to decide if this call should pass or fail. If it should fail then this method throws an Exception.
-     * Otherwise it does nothing.
-     * 
-     * @throws Exception thrown if the call should fail
+     * Simulate some work that takes somewhere between minWorkTime and maxWorkTime (in millis)
      */
-    private void passOrFail() throws Exception {
-        boolean fail = gremlinFactory.fail();
-
-        if(fail) {
-            long callCount = callCounter.getCount();
-            double failProbability = gremlinFactory.getFailProbability();
-            Exception e = new Exception("ServiceB deliberately caused to fail. Call count: " + callCount
-                    + ", failProbability: " + failProbability);
-            System.out.println("Throwing: " + e.getMessage());
-            throw e;
-        }
-    }
+    private void simulateWork() throws Exception {
+        //simulate some work
+        double randomDouble = random.nextDouble();
+        long delta = (long) ((maxWorkTime-minWorkTime)*randomDouble);
+        long workTime = minWorkTime+delta;
+        
+        Thread.sleep(workTime);
+    }    
 }

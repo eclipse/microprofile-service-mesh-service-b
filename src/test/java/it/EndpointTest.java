@@ -26,6 +26,7 @@
 package it;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -40,6 +41,18 @@ public class EndpointTest {
         String url = "http://localhost:" + port + endpoint;
         Response response = sendRequest(url, "GET");
         int responseCode = response.getStatus();
+        int retries = 0;
+        while(responseCode != expectedStatus && retries < 5) {
+            //sleep a little then retry
+            try {
+                Thread.sleep(2100); //the default failure length is 2000ms, so a little longer than that
+            }
+            catch(InterruptedException e) {
+                fail(e.getMessage());
+            }
+            retries++;
+            response = sendRequest(url, "GET");
+        }
         assertTrue("Incorrect response code: " + responseCode,
                    responseCode == expectedStatus);
 
