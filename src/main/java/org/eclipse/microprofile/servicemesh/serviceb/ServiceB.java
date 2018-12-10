@@ -42,23 +42,23 @@ public class ServiceB {
     @Inject
     @ConfigProperty(name = "minWorkTime", defaultValue = "100") //how long should the minimum simulated work be in ms
     private long minWorkTime;
-    
+
     @Inject
     @ConfigProperty(name = "maxWorkTime", defaultValue = "5000") //how long should the maximum simulated work be in ms
     private long maxWorkTime;
-    
+
     private Random random = new Random();
-    
+
     @Inject
     @Metric(name="callCounter")
     Counter callCounter;
 
     @Counted(name="callCounter", monotonic=true)
-    public ServiceData call() throws Exception {
+    public ServiceData call(String userAgent) throws Exception {
         long callCount = callCounter.getCount();
 
         simulateWork();
-        
+
         String hostname;
         try {
             hostname = InetAddress.getLocalHost()
@@ -69,13 +69,13 @@ public class ServiceB {
 
         ServiceData data = new ServiceData();
         data.setSource(this.toString() + " on " + hostname);
-        data.setMessage("Hello from serviceB @ "+data.getTime());
+        data.setMessage("Hello from serviceB on >" + hostname + "< and agent: >" + userAgent+ "< @ "+data.getTime());
         data.setCallCount(callCount);
         data.setTries(1);
-        
+
         return data;
     }
-    
+
     /**
      * Simulate some work that takes somewhere between minWorkTime and maxWorkTime (in millis)
      */
@@ -84,7 +84,7 @@ public class ServiceB {
         double randomDouble = random.nextDouble();
         long delta = (long) ((maxWorkTime-minWorkTime)*randomDouble);
         long workTime = minWorkTime+delta;
-        
+
         Thread.sleep(workTime);
-    }    
+    }
 }

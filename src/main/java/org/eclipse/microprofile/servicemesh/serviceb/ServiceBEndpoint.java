@@ -27,6 +27,7 @@ package org.eclipse.microprofile.servicemesh.serviceb;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -39,15 +40,15 @@ public class ServiceBEndpoint {
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)
-    public String callPlainText() throws Exception {
-        ServiceData data = call();
+    public String callPlainText(@HeaderParam("user-agent") String userAgent) throws Exception {
+        ServiceData data = call(userAgent);
         return data.getMessage() + " " + data.getSource();
     }
-    
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public ServiceData call() throws Exception {
-        ServiceData data = serviceB.call();
+    public ServiceData call(@HeaderParam("user-agent") String userAgent) throws Exception {
+        ServiceData data = serviceB.call(userAgent);
         return data;
     }
 }
