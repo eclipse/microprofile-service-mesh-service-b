@@ -31,6 +31,11 @@ The service will be accessible at http://localhost:8080/mp-servicemesh-sample/se
     docker build -t <docker id>/serviceb-<profile>:<mp version> -f src/main/profiles/liberty/Dockerfile .
     docker run -p 8080:8080 <docker id>/serviceb-<profile>:<mp version>
 
+    e.g.
+    docker build -t microprofile/serviceb-liberty:mp-2.0 -f src/main/profiles/liberty/Dockerfile .
+    docker run -p 8080:8080 microprofile/serviceb-liberty:mp-2.0
+
+
 The service will be accessible at http://localhost:8080/mp-servicemesh-sample/serviceB
 
 ## Thorntail
@@ -51,5 +56,9 @@ The service will be accessible at http://localhost:8080/mp-servicemesh-sample/se
     mvn -Pthorntail package 
     docker build -t <docker id>/serviceb-<profile>:<mp version> -f src/main/profiles/thorntail/Dockerfile .
     docker run -p 8080:8080 <docker id>/serviceb-<profile>:<mp version>
+    
+    e.g.
+    docker build -t emijiang/serviceb-thorntail:mp-1.3 -f src/main/profiles/thorntail/Dockerfile .
+    docker run -p 8080:8080 emijiang/serviceb-thorntail:mp-1.3
 
 The service will be accessible at http://localhost:8080/mp-servicemesh-sample/serviceB
