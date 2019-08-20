@@ -10,7 +10,7 @@
 /local.properties
 .*.swp
 .DS_Store
-
+.vscode
 src/main/profiles/liberty/config/server.env
 
 .idea
