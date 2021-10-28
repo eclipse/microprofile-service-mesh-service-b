@@ -29,11 +29,11 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.eclipse.microprofile.health.Health;
 import org.eclipse.microprofile.health.HealthCheck;
 import org.eclipse.microprofile.health.HealthCheckResponse;
+import org.eclipse.microprofile.health.Liveness;
 
-@Health
+@Liveness
 @ApplicationScoped
 public class HealthEndpoint implements HealthCheck {
 
@@ -50,11 +50,11 @@ public class HealthEndpoint implements HealthCheck {
 
     if (healthy) {
       hcr = HealthCheckResponse.named("serviceB")
-                                .withData("healthy", healthy)
+                                .withData("alive", healthy)
                                 .up().build();
     } else {
       hcr = HealthCheckResponse.named("serviceB")
-                                .withData("healthy", healthy)
+                                .withData("alive", healthy)
                                 .down().build();
     }
 

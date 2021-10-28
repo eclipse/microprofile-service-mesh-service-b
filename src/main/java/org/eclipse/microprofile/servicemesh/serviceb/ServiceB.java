@@ -53,7 +53,7 @@ public class ServiceB {
     @Metric(name="callCounter")
     Counter callCounter;
 
-    @Counted(name="callCounter", monotonic=true)
+    @Counted(name="callCounter")
     public ServiceData call(String userAgent) throws Exception {
         long callCount = callCounter.getCount();
 
